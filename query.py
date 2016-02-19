@@ -1,4 +1,5 @@
 import psycopg2
+import sys
 
 from secret import mysecretpassword
 
@@ -8,6 +9,26 @@ conn = psycopg2.connect(database='players', user='postgres',
 
 cur = conn.cursor()
 
+def route():
+	"""Ask the user how he wants to interact with the db"""
+	while True:
+		decision = input("\nHello there! How do you want to interact with the "
+						 "database? You can [S]earch it, [A]dd users "
+						 "[D]isplay top performers or [Q]uit "
+						 "Type a letter in the bracket. ").lower()
+		if decision == 's':
+			find_player()
+		elif decision == 'a':
+			add_players()
+		elif decision == 'd':
+			top_performers()
+		elif decision == 'q':
+			print("Thanks for querying!")
+			sys.exit()
+		else:
+			print("Im sorry I did not understand")
+			route()
+
 def find_player():
 	"""Search the db by player name"""
 	print("Here is the current list of players in the db...\n")
@@ -16,7 +37,7 @@ def find_player():
 	cur.execute("select * from player_stats where player_name = (%s);", (player_search,))
 	row = cur.fetchall()
 	print(row)
-	return
+	return row
 
 def display_player_names():
 	"""Display player names so user knows who is in the db"""
@@ -40,22 +61,19 @@ def add_players():
 
 def top_performers():
 	"""Allow user to search for top players in each category"""
-	choice = ("See which players performed the best in each category, "
+	choice = input("See which players performed the best in each category, "
 		  	  "You can search [R]ec, [Y]ds, [YR]ds_rec, [L]ong or [TD] "
 		  	  "Type the letter(s) in the brackets for the listings\n ").lower()
 	if choice == 'r':
 		print(list_rec())
 	elif choice == 'y':
 		print(list_yds())
-	elif choice == 'YR':
+	elif choice == 'yr':
 		print(list_yds_rec())
-	elif choice == 'L':
+	elif choice == 'l':
 		print(list_long())
 	elif choice == 'td':
 		print(list_td())
-	else:
-		print("What did you say? I did not understand that. \n\n")
-		top_performers()
 
 def list_rec():
 	"""List the receptions by top performer"""
@@ -91,73 +109,65 @@ def update_record():
 	"""Allow a user to update a record"""
 	print("Alright first lets find who you want to update.")
 	record = find_player()
-	cur.execute("""SELECT ID FROM player_stats WHERE player_name = (%s)""", (record,))
-	ID = cur.fetchall()
-	choice = input("Do you want to update his "
+	cur.execute("""SELECT ID FROM player_stats WHERE player_name = (%s)""", (record[0][1],))
+	choice = input("\nDo you want to update his "
 				   "[P]layer name, [R]ec, [Y]ds, [YR]ds_rec, "
 				   "[L]ong, [TD] "
 				   "Type a letter(s) in the bracket ").lower()
 	if choice == 'p':
 		update_name = input("What name do you want to change too? ")
-		print(update_player(ID, update_name))
+		print(update_player(record, update_name))
 	elif choice == 'r':
-		update_reception = input("How many receptions are you changing it too? ")
-		print(update_rec(ID, update_reception))
+		update_reception = int(input("How many receptions are you changing it too? "))
+		print(update_rec(record, update_reception))
 	elif choice == 'y':
-		update_yards = input("How many yards are you changing it too? ")
-		print(update_yds(ID, update_yards))
+		update_yards = int(input("How many yards are you changing it too? "))
+		print(update_yds(record, update_yards))
 	elif choice == 'yr':
-		update_yards_rec = input("How many yards/rec are you changing it too? ")
-		print(update_yds_rec(ID, update_yards_rec))
+		update_yards_rec = float(input("How many yards/rec are you changing it too? "))
+		print(update_yds_rec(record, update_yards_rec))
 	elif choice == 'l':
-		update_longest = input("What are you changing his longest run too? ")
-		print(update_long(ID, update_longest))
+		update_longest = int(input("What are you changing his longest run too? "))
+		print(update_long(record, update_longest))
 	elif choice == 'td':
-		update_tds = input("How many tds are you changing it too? ")
-		print(update_td(ID, update_tds))
+		update_tds = int(input("How many tds are you changing it too? "))
+		print(update_td(record, update_tds))
 
-def update_player(ID, update_name):
+def update_player(record, update_name):
 	cur.execute("""UPDATE player_stats SET player_name = (%s),
-				WHERE ID = (%s)""", (update_name, ID))
-	print(success())
-	return grab_data()
+				WHERE ID = (%s)""", (update_name, record[0][0]))
+	return success()
 
-def update_rec(ID, update_reception):
-	cur.execute("""UPDATE player_stats SET rec = (%s), WHERE ID = (%s)""",
-				(update_reception, ID))
-	print(success())
-	return grab_data()
+def update_rec(record, update_reception):
+	cur.execute("""UPDATE player_stats SET rec = (%s) WHERE ID = (%s)""",
+				(update_reception, record[0][0]))
+	return success()
 
-def update_yds(ID, update_yards):
-	cur.execute("""UPDATE player_stats SET yds = (%s), WHERE ID = (%s)""",
-				(update_yards, ID))
-	print(success())
-	return grab_data()
+def update_yds(record, update_yards):
+	cur.execute("""UPDATE player_stats SET yds = (%s) WHERE ID = (%s)""",
+				(update_yards, record[0][0]))
+	return success()
 
-def update_yds_rec(ID, update_yards_rec):
-	cur.execute("""UPDATE player_stats SET yds_rec = (%s), WHERE ID = (%s)""",
-				(update_yards_rec, ID))
-	print(success())
-	return grab_data()
+def update_yds_rec(record, update_yards_rec):
+	cur.execute("""UPDATE player_stats SET yds_rec = (%s) WHERE ID = (%s)""",
+				(update_yards_rec, record[0][0]))
+	return success()
 
-def update_long(ID, update_longest):
-	cur.execute("""UPDATE player_stats SET long = (%s), WHERE ID = (%s)""",
-				(update_longest, ID))
-	print(success())
-	return grab_data()
+def update_long(record, update_longest):
+	cur.execute("""UPDATE player_stats SET long = (%s) WHERE ID = (%s)""",
+				(update_longest, record[0][0]))
+	return success()
 
-def update_td(ID, update_tds):
-	cur.execute("""UPDATE player_stats SET = (%s), WHERE ID = (%s)""",
-				(update_tds, ID))
-	print(success())
-	return grab_data()
+def update_td(record, update_tds):
+	cur.execute("""UPDATE player_stats SET = (%s) WHERE ID = (%s)""",
+				(update_tds, record[0][0]))
+	return success()
 
 def success():
 	"""Let the user know they were successful"""
 	return "Data successfully changed!"
 
-#print(add_players())
-print(update_record())
+route()
 
 conn.commit()
 
