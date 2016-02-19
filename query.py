@@ -35,7 +35,7 @@ def add_players():
 	td = input("Enter how many touchdowns he got: ")
 	data = [player, rec, yds, yds_rec, longest, td]
 	cur.executemany("""INSERT INTO player_stats VALUES
-				(%s, %s, %s, %s, %s, %s)""", data)
+				(DEFAULT, %s, %s, %s, %s, %s, %s)""", (data,))
 	return "Your player has been added!"
 
 def top_performers():
@@ -86,6 +86,78 @@ def grab_data():
 	"""Grab data from db"""
 	rows = cur.fetchall()
 	return rows
+
+def update_record():
+	"""Allow a user to update a record"""
+	print("Alright first lets find who you want to update.")
+	record = find_player()
+	cur.execute("""SELECT ID FROM player_stats WHERE player_name = (%s)""", (record,))
+	ID = cur.fetchall()
+	choice = input("Do you want to update his "
+				   "[P]layer name, [R]ec, [Y]ds, [YR]ds_rec, "
+				   "[L]ong, [TD] "
+				   "Type a letter(s) in the bracket ").lower()
+	if choice == 'p':
+		update_name = input("What name do you want to change too? ")
+		print(update_player(ID, update_name))
+	elif choice == 'r':
+		update_reception = input("How many receptions are you changing it too? ")
+		print(update_rec(ID, update_reception))
+	elif choice == 'y':
+		update_yards = input("How many yards are you changing it too? ")
+		print(update_yds(ID, update_yards))
+	elif choice == 'yr':
+		update_yards_rec = input("How many yards/rec are you changing it too? ")
+		print(update_yds_rec(ID, update_yards_rec))
+	elif choice == 'l':
+		update_longest = input("What are you changing his longest run too? ")
+		print(update_long(ID, update_longest))
+	elif choice == 'td':
+		update_tds = input("How many tds are you changing it too? ")
+		print(update_td(ID, update_tds))
+
+def update_player(ID, update_name):
+	cur.execute("""UPDATE player_stats SET player_name = (%s),
+				WHERE ID = (%s)""", (update_name, ID))
+	print(success())
+	return grab_data()
+
+def update_rec(ID, update_reception):
+	cur.execute("""UPDATE player_stats SET rec = (%s), WHERE ID = (%s)""",
+				(update_reception, ID))
+	print(success())
+	return grab_data()
+
+def update_yds(ID, update_yards):
+	cur.execute("""UPDATE player_stats SET yds = (%s), WHERE ID = (%s)""",
+				(update_yards, ID))
+	print(success())
+	return grab_data()
+
+def update_yds_rec(ID, update_yards_rec):
+	cur.execute("""UPDATE player_stats SET yds_rec = (%s), WHERE ID = (%s)""",
+				(update_yards_rec, ID))
+	print(success())
+	return grab_data()
+
+def update_long(ID, update_longest):
+	cur.execute("""UPDATE player_stats SET long = (%s), WHERE ID = (%s)""",
+				(update_longest, ID))
+	print(success())
+	return grab_data()
+
+def update_td(ID, update_tds):
+	cur.execute("""UPDATE player_stats SET = (%s), WHERE ID = (%s)""",
+				(update_tds, ID))
+	print(success())
+	return grab_data()
+
+def success():
+	"""Let the user know they were successful"""
+	return "Data successfully changed!"
+
+#print(add_players())
+print(update_record())
 
 conn.commit()
 
