@@ -6,7 +6,6 @@ conn = psycopg2.connect(database='players', user='postgres',
 						password=mysecretpassword)
 cur = conn.cursor()
 
-
 cur.execute("""CREATE TABLE player_stats
 			(player_name VARCHAR(50), rec SMALLINT,
 			yds SMALLINT, yds_rec REAL, long SMALLINT,
@@ -23,7 +22,7 @@ stats = [
 	('Steven Jackson', 1, 2, 2.0, 2, 0)
 ]
 
-#cur.execute("""INSERT INTO player_stats VALUES(%s, %s, %s, %s, %s, %s)""", (stats,))
+cur.executemany("""INSERT INTO player_stats VALUES(%s, %s, %s, %s, %s, %s)""", (stats))
 
 
 conn.commit()
