@@ -1,0 +1,5 @@
+__pycache__/
+players_env/
+secret.py
+*.pyc
+.DS_Store
