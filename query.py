@@ -34,15 +34,15 @@ def add_players():
 	longest = input("Enter his longest yards for on catch ")
 	td = input("Enter how many touchdowns he got: ")
 	data = [player, rec, yds, yds_rec, longest, td]
-	cur.execute("""INSERT INTO player_stats VALUES
-				(%s, %s, %s, %s, %s, %s)""", (data,))
+	cur.executemany("""INSERT INTO player_stats VALUES
+				(%s, %s, %s, %s, %s, %s)""", data)
 	return "Your player has been added!"
 
 def top_performers():
 	"""Allow user to search for top players in each category"""
-	choice = input("See which players performed the best in each category, "
-		  	  	   "You can search [R]ec, [Y]ds, [YR]ds_rec, [L]ong or [TD] "
-		  	  	   "Type the letter(s) in the brackets for the listings\n ").lower()
+	choice = ("See which players performed the best in each category, "
+		  	  "You can search [R]ec, [Y]ds, [YR]ds_rec, [L]ong or [TD] "
+		  	  "Type the letter(s) in the brackets for the listings\n ").lower()
 	if choice == 'r':
 		print(list_rec())
 	elif choice == 'y':
@@ -53,42 +53,39 @@ def top_performers():
 		print(list_long())
 	elif choice == 'td':
 		print(list_td())
+	else:
+		print("What did you say? I did not understand that. \n\n")
+		top_performers()
 
 def list_rec():
 	"""List the receptions by top performer"""
-	cur.execute("""SELECT * FROM player_stats ORDER BY rec DESC;""")
+	cur.execute("""SELECT * FROM player_stats ORDER BY rec DESC""")
 	return grab_data()
-	
+
 def list_yds():
 	"""List the yards by top performer"""
-	cur.execute("""SELECT * FROM player_stats ORDER BY yds DESC;""")
+	cur.execute("""SELECT * FROM player_stats ORDER BY yds DESC""")
 	return grab_data()
 
 def list_yds_rec():
 	"""List the yards per reception by top performer"""
-	cur.execute("""SELECT * FROM player_stats ORDER BY yds_rec DESC;""")
+	cur.execute("""SELECT * FROM player_stats ORDER BY yds_rec DESC""")
 	return grab_data()
 
 def list_long():
-	"""List the longest run by top performer"""
-	cur.execute("""SELECT * FROM player_stats ORDER BY long DESC;""")
+	"""List the longest reception by the top performer"""
+	cur.execute("""SELECT * FROM player_stats ORDER BY long DESC""")
 	return grab_data()
 
 def list_td():
-	"""List the player with the most TDs first"""
-	cur.execute("""SELECT * FROM player_stats ORDER BY td DESC;""")
+	"""List the most tds by top performer"""
+	cur.execute("""SELECT * FROM player_stats ORDER BY td DESC""")
 	return grab_data()
 
 def grab_data():
 	"""Grab data from db"""
 	rows = cur.fetchall()
 	return rows
-
-def update_record():
-	"""Allow the user to updata a record"""
-	print(find_player())
-
-print(add_players())
 
 conn.commit()
 
