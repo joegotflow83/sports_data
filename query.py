@@ -36,8 +36,11 @@ def find_player():
 	player_search = input("Which player do you want to search for? ")
 	cur.execute("select * from player_stats where player_name = (%s);", (player_search,))
 	row = cur.fetchall()
-	print(row)
-	return row
+	if row == []:
+		print("I'm sorry, that player is not in the database")
+	else:
+		print(row)
+		return row
 
 def display_player_names():
 	"""Display player names so user knows who is in the db"""
