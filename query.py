@@ -44,7 +44,7 @@ def find_player():
 
 def display_player_names():
 	"""Display player names so user knows who is in the db"""
-	cur.execute("""SELECT player_name FROM player_stats""")
+	cur.execute("SELECT player_name FROM player_stats")
 	rows = cur.fetchall()
 	players = map(lambda x: x, rows)
 	return list(players)
@@ -80,27 +80,27 @@ def top_performers():
 
 def list_rec():
 	"""List the receptions by top performer"""
-	cur.execute("""SELECT * FROM player_stats ORDER BY rec DESC""")
+	cur.execute("SELECT * FROM player_stats ORDER BY rec DESC")
 	return grab_data()
 
 def list_yds():
 	"""List the yards by top performer"""
-	cur.execute("""SELECT * FROM player_stats ORDER BY yds DESC""")
+	cur.execute("SELECT * FROM player_stats ORDER BY yds DESC")
 	return grab_data()
 
 def list_yds_rec():
 	"""List the yards per reception by top performer"""
-	cur.execute("""SELECT * FROM player_stats ORDER BY yds_rec DESC""")
+	cur.execute("SELECT * FROM player_stats ORDER BY yds_rec DESC")
 	return grab_data()
 
 def list_long():
 	"""List the longest reception by the top performer"""
-	cur.execute("""SELECT * FROM player_stats ORDER BY long DESC""")
+	cur.execute("SELECT * FROM player_stats ORDER BY long DESC")
 	return grab_data()
 
 def list_td():
 	"""List the most tds by top performer"""
-	cur.execute("""SELECT * FROM player_stats ORDER BY td DESC""")
+	cur.execute("SELECT * FROM player_stats ORDER BY td DESC")
 	return grab_data()
 
 def grab_data():
@@ -142,27 +142,27 @@ def update_player(record, update_name):
 	return success()
 
 def update_rec(record, update_reception):
-	cur.execute("""UPDATE player_stats SET rec = (%s) WHERE ID = (%s)""",
+	cur.execute("UPDATE player_stats SET rec = (%s) WHERE ID = (%s)",
 				(update_reception, record[0][0]))
 	return success()
 
 def update_yds(record, update_yards):
-	cur.execute("""UPDATE player_stats SET yds = (%s) WHERE ID = (%s)""",
+	cur.execute("UPDATE player_stats SET yds = (%s) WHERE ID = (%s)",
 				(update_yards, record[0][0]))
 	return success()
 
 def update_yds_rec(record, update_yards_rec):
-	cur.execute("""UPDATE player_stats SET yds_rec = (%s) WHERE ID = (%s)""",
+	cur.execute("UPDATE player_stats SET yds_rec = (%s) WHERE ID = (%s)",
 				(update_yards_rec, record[0][0]))
 	return success()
 
 def update_long(record, update_longest):
-	cur.execute("""UPDATE player_stats SET long = (%s) WHERE ID = (%s)""",
+	cur.execute("UPDATE player_stats SET long = (%s) WHERE ID = (%s)",
 				(update_longest, record[0][0]))
 	return success()
 
 def update_td(record, update_tds):
-	cur.execute("""UPDATE player_stats SET = (%s) WHERE ID = (%s)""",
+	cur.execute("UPDATE player_stats SET = (%s) WHERE ID = (%s)",
 				(update_tds, record[0][0]))
 	return success()
 
